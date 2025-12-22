@@ -26,7 +26,6 @@ public class ContractController {
     public ResponseEntity<Contract> getById(@PathVariable Long id) {
         return ResponseEntity.ok(contractService.getContractById(id));
     }
-
     @GetMapping
     public ResponseEntity<List<Contract>> getAll() {
         return ResponseEntity.ok(contractService.getAllContracts());
