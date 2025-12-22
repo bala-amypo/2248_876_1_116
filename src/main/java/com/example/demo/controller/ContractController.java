@@ -1,26 +1,34 @@
-package com.example.demo.config;
+package com.example.demo.controller;
 
-import io.swagger.v3.oas.models.*;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.*;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.example.demo.entity.Contract;
+import com.example.demo.service.ContractService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Configuration
-public class OpenApiConfig {
+import java.util.List;
 
-    @Bean
-    public OpenAPI openAPI() {
-        return new OpenAPI()
-            .info(new Info()
-                .title("Contract Breach Penalty Calculator API")
-                .version("1.0")
-                .description("Manages contracts, deliveries, penalties, and breach reports"))
-            .components(new Components()
-                .addSecuritySchemes("bearerAuth",
-                    new SecurityScheme()
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT")));
+@RestController
+@RequestMapping("/api/contracts")
+public class ContractController {
+
+    private final ContractService contractService;
+
+    public ContractController(ContractService contractService) {
+        this.contractService = contractService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Contract> create(@RequestBody Contract contract) {
+        return ResponseEntity.ok(contractService.createContract(contract));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Contract> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(contractService.getContractById(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Contract>> getAll() {
+        return ResponseEntity.ok(contractService.getAllContracts());
     }
 }
