@@ -1,10 +1,12 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.DeliveryRecord;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.*;
+
+import com.example.demo.entity.DeliveryRecord;
 
 public interface DeliveryRecordRepository extends JpaRepository<DeliveryRecord, Long> {
+
     List<DeliveryRecord> findByContractId(Long contractId);
-    Optional<DeliveryRecord> findFirstByContractIdOrderByDeliveryDateDesc(Long contractId);
 }
