@@ -19,19 +19,17 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
     private final DeliveryRecordRepository deliveryRecordRepository;
     private final ContractRepository contractRepository;
 
-    // ✅ Constructor Injection (MANDATORY for your test)
     public DeliveryRecordServiceImpl(DeliveryRecordRepository deliveryRecordRepository,
                                      ContractRepository contractRepository) {
         this.deliveryRecordRepository = deliveryRecordRepository;
         this.contractRepository = contractRepository;
     }
 
-    // ✅ Create delivery record with date validation
     @Override
     public DeliveryRecord createDeliveryRecord(DeliveryRecord record) {
 
         if (record == null) {
-            throw new ApiException("DeliveryRecord cannot be null");
+            throw new ApiException("Delivery record cannot be null");
         }
 
         if (record.getContract() == null || record.getContract().getId() == null) {
@@ -42,48 +40,31 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
                 .orElseThrow(() -> new ResourceNotFoundException("Contract not found"));
 
         record.setContract(contract);
-        // deliveryDate validation already handled in entity
 
         return deliveryRecordRepository.save(record);
     }
 
-    // ✅ Retrieve specific record
     @Override
     public DeliveryRecord getRecordById(Long id) {
-
-        if (id == null) {
-            throw new ApiException("DeliveryRecord ID cannot be null");
-        }
-
         return deliveryRecordRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("DeliveryRecord not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery record not found"));
     }
 
-    // ✅ Retrieve all records for a contract
     @Override
     public List<DeliveryRecord> getDeliveryRecordsForContract(Long contractId) {
 
-        if (contractId == null) {
-            throw new ApiException("Contract ID cannot be null");
-        }
-
         if (!contractRepository.existsById(contractId)) {
-            throw new ResourceNotFoundException("Contract not found with id: " + contractId);
+            throw new ResourceNotFoundException("Contract not found");
         }
 
         return deliveryRecordRepository.findByContractId(contractId);
     }
 
-    // ✅ Get most recent delivery record
     @Override
     public DeliveryRecord getLatestDeliveryRecord(Long contractId) {
 
-        List<DeliveryRecord> records = getDeliveryRecordsForContract(contractId);
-
-        return records.stream()
+        return getDeliveryRecordsForContract(contractId).stream()
                 .max(Comparator.comparing(DeliveryRecord::getDeliveryDate))
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("No delivery records found for contract"));
+                .orElseThrow(() -> new ResourceNotFoundException("No delivery records found"));
     }
 }
