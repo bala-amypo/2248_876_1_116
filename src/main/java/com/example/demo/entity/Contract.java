@@ -1,7 +1,8 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
+
+import jakarta.persistence.*;
 
 @Entity
 public class Contract {
@@ -10,8 +11,14 @@ public class Contract {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String contractNumber;
-    private BigDecimal baseContractValue;
+
+    @Column(nullable = false)
+    private BigDecimal contractValue;
+
+    @Column(nullable = false)
+    private boolean active;
 
     public Contract() {}
 
@@ -19,19 +26,32 @@ public class Contract {
         return id;
     }
 
-    public String getContractNumber() {
-        return contractNumber;
+    // 🔴 THIS WAS MISSING — NOW FIXED
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public BigDecimal getBaseContractValue() {
-        return baseContractValue;
+    public String getContractNumber() {
+        return contractNumber;
     }
 
     public void setContractNumber(String contractNumber) {
         this.contractNumber = contractNumber;
     }
 
-    public void setBaseContractValue(BigDecimal baseContractValue) {
-        this.baseContractValue = baseContractValue;
+    public BigDecimal getContractValue() {
+        return contractValue;
+    }
+
+    public void setContractValue(BigDecimal contractValue) {
+        this.contractValue = contractValue;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
