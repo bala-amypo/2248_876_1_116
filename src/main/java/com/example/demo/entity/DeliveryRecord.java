@@ -2,19 +2,11 @@ package com.example.demo.entity;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.*;
+
 import com.example.demo.exception.ApiException;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
 @Entity
-@Table(name = "delivery_records")
 public class DeliveryRecord {
 
     @Id
@@ -22,7 +14,7 @@ public class DeliveryRecord {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "contract_id", nullable = false)
+    @JoinColumn(name = "contract_id")
     private Contract contract;
 
     @Column(nullable = false)
@@ -35,12 +27,24 @@ public class DeliveryRecord {
     }
 
     // ✅ Core fields constructor
-    public DeliveryRecord(Contract contract, LocalDate deliveryDate) {
+    public DeliveryRecord(Contract contract, LocalDate deliveryDate, String notes) {
         this.contract = contract;
         setDeliveryDate(deliveryDate);
+        this.notes = notes;
     }
 
-    // ✅ Getters and Setters
+    // ✅ FUTURE DATE VALIDATION
+    public void setDeliveryDate(LocalDate deliveryDate) {
+        if (deliveryDate == null) {
+            throw new ApiException("Delivery date is required");
+        }
+        if (deliveryDate.isAfter(LocalDate.now())) {
+            throw new ApiException("Delivery date cannot be in the future");
+        }
+        this.deliveryDate = deliveryDate;
+    }
+
+    // ---------- GETTERS & SETTERS ----------
 
     public Long getId() {
         return id;
@@ -56,19 +60,6 @@ public class DeliveryRecord {
 
     public LocalDate getDeliveryDate() {
         return deliveryDate;
-    }
-
-    // ✅ Rule: deliveryDate cannot be in the future
-    public void setDeliveryDate(LocalDate deliveryDate) {
-        if (deliveryDate == null) {
-            throw new ApiException("deliveryDate cannot be null");
-        }
-
-        if (deliveryDate.isAfter(LocalDate.now())) {
-            throw new ApiException("deliveryDate cannot be in the future");
-        }
-
-        this.deliveryDate = deliveryDate;
     }
 
     public String getNotes() {
