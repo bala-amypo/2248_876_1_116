@@ -29,11 +29,11 @@ public class ContractServiceImpl implements ContractService {
 
         if (contract.getBaseContractValue() == null ||
             contract.getBaseContractValue().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ApiException("Base contract value must be greater than zero");
+            throw new ApiException("Base contract value invalid");
         }
 
         if (contractRepository.findByContractNumber(contract.getContractNumber()).isPresent()) {
-            throw new ApiException("Contract already exists");
+            throw new ApiException("Contract exists");
         }
 
         return contractRepository.save(contract);

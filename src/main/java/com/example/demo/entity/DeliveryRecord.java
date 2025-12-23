@@ -22,29 +22,24 @@ public class DeliveryRecord {
 
     private String notes;
 
-    // ✅ No-args constructor
     public DeliveryRecord() {
     }
 
-    // ✅ Core fields constructor
     public DeliveryRecord(Contract contract, LocalDate deliveryDate, String notes) {
         this.contract = contract;
         setDeliveryDate(deliveryDate);
         this.notes = notes;
     }
 
-    // ✅ FUTURE DATE VALIDATION
     public void setDeliveryDate(LocalDate deliveryDate) {
         if (deliveryDate == null) {
             throw new ApiException("Delivery date is required");
         }
         if (deliveryDate.isAfter(LocalDate.now())) {
-            throw new ApiException("Delivery date cannot be in the future");
+            throw new ApiException("future delivery date not allowed");
         }
         this.deliveryDate = deliveryDate;
     }
-
-    // ---------- GETTERS & SETTERS ----------
 
     public Long getId() {
         return id;
