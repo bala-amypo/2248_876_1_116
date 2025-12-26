@@ -27,11 +27,14 @@ public class BreachRule {
     private Double maxPenaltyPercentage;
     
     @Column(nullable = false)
+    @Builder.Default
     private Boolean active = true;
     
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isDefaultRule = false;
     
     @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

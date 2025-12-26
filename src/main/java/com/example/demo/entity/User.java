@@ -29,5 +29,6 @@ public class User {
     private Set<String> roles;
     
     @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

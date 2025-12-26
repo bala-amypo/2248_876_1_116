@@ -28,5 +28,6 @@ public class PenaltyCalculation {
     private BigDecimal calculatedPenalty;
     
     @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime calculatedAt = LocalDateTime.now();
 }

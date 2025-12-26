@@ -28,5 +28,6 @@ public class BreachReport {
     private BigDecimal penaltyAmount;
     
     @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime generatedAt = LocalDateTime.now();
 }

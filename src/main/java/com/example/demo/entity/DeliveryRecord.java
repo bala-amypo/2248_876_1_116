@@ -27,5 +27,6 @@ public class DeliveryRecord {
     private String notes;
     
     @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }
