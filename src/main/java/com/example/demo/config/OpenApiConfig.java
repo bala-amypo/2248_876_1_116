@@ -2,8 +2,12 @@ package com.example.demo.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
@@ -14,6 +18,12 @@ public class OpenApiConfig {
             .info(new Info()
                 .title("Contract Management API")
                 .version("1.0")
-                .description("API for managing contracts and breach calculations"));
+                .description("API for managing contracts, delivery records, breach calculations, and reports")
+                .contact(new Contact()
+                    .name("Demo Team")
+                    .email("demo@example.com")))
+            .servers(List.of(
+                new Server().url("http://localhost:8080").description("Local server")
+            ));
     }
 }
