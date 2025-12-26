@@ -1,69 +1,48 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
+import com.example.demo.entity.DeliveryRecord;
+import com.example.demo.service.DeliveryRecordService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.entity.DeliveryRecord;
-import com.example.demo.service.DeliveryRecordService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/delivery-records")
+@Tag(name = "Delivery Record Management", description = "APIs for managing delivery records")
 public class DeliveryRecordController {
 
-    private final DeliveryRecordService deliveryRecordService;
+    @Autowired
+    private DeliveryRecordService deliveryRecordService;
 
-    // ✅ Constructor Injection (MANDATORY)
-    public DeliveryRecordController(DeliveryRecordService deliveryRecordService) {
-        this.deliveryRecordService = deliveryRecordService;
-    }
-
-    // ✅ POST /api/delivery-records
-    // Creates delivery record
     @PostMapping
-    public ResponseEntity<DeliveryRecord> createDeliveryRecord(
-            @RequestBody DeliveryRecord deliveryRecord) {
-
-        DeliveryRecord savedRecord =
-                deliveryRecordService.createDeliveryRecord(deliveryRecord);
-
-        return new ResponseEntity<>(savedRecord, HttpStatus.CREATED);
+    @Operation(summary = "Create a new delivery record")
+    public ResponseEntity<DeliveryRecord> createDeliveryRecord(@RequestBody DeliveryRecord record) {
+        DeliveryRecord created = deliveryRecordService.createDeliveryRecord(record);
+        return ResponseEntity.ok(created);
     }
 
-    // ✅ GET /api/delivery-records/{id}
-    // Retrieves specific record
     @GetMapping("/{id}")
-    public ResponseEntity<DeliveryRecord> getRecordById(@PathVariable Long id) {
-
-        DeliveryRecord record =
-                deliveryRecordService.getRecordById(id);
-
+    @Operation(summary = "Get delivery record by ID")
+    public ResponseEntity<DeliveryRecord> getDeliveryRecord(@PathVariable Long id) {
+        DeliveryRecord record = deliveryRecordService.getRecordById(id);
         return ResponseEntity.ok(record);
     }
 
-    // ✅ GET /api/delivery-records/contract/{contractId}
-    // Gets all records for a contract
     @GetMapping("/contract/{contractId}")
-    public ResponseEntity<List<DeliveryRecord>> getRecordsForContract(
-            @PathVariable Long contractId) {
-
-        List<DeliveryRecord> records =
-                deliveryRecordService.getDeliveryRecordsForContract(contractId);
-
+    @Operation(summary = "Get delivery records for contract")
+    public ResponseEntity<List<DeliveryRecord>> getDeliveryRecordsForContract(@PathVariable Long contractId) {
+        List<DeliveryRecord> records = deliveryRecordService.getDeliveryRecordsForContract(contractId);
         return ResponseEntity.ok(records);
     }
 
-    // ✅ GET /api/delivery-records/contract/{contractId}/latest
-    // Gets latest delivery record
     @GetMapping("/contract/{contractId}/latest")
-    public ResponseEntity<DeliveryRecord> getLatestDeliveryRecord(
-            @PathVariable Long contractId) {
-
-        DeliveryRecord latestRecord =
-                deliveryRecordService.getLatestDeliveryRecord(contractId);
-
-        return ResponseEntity.ok(latestRecord);
+    @Operation(summary = "Get latest delivery record for contract")
+    public ResponseEntity<DeliveryRecord> getLatestDeliveryRecord(@PathVariable Long contractId) {
+        DeliveryRecord record = deliveryRecordService.getLatestDeliveryRecord(contractId);
+        return ResponseEntity.ok(record);
     }
 }
