@@ -1,22 +1,37 @@
 package com.example.demo.entity;
 
+import lombok.*;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "ruleName"))
+@Table(name = "breach_rules")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BreachRule {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String ruleName;
-    private BigDecimal penaltyPerDay;
-    private Double maxPenaltyPercentage;
-    private Boolean active = true;
-    private Boolean isDefaultRule = false;
-
-    public BreachRule() {}
-}
     
+    @Column(nullable = false)
+    private String ruleName;
+    
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal penaltyPerDay;
+    
+    @Column(nullable = false)
+    private Double maxPenaltyPercentage;
+    
+    @Column(nullable = false)
+    private Boolean active = true;
+    
+    @Column(nullable = false)
+    private Boolean isDefaultRule = false;
+    
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+}
