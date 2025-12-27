@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface PenaltyCalculationRepository extends JpaRepository<PenaltyCalculation, Long> {
-    List<PenaltyCalculation> findByContractId(Long contractId);
     Optional<PenaltyCalculation> findTopByContractIdOrderByCalculatedAtDesc(Long contractId);
+    List<PenaltyCalculation> findByContractId(Long contractId);
 }

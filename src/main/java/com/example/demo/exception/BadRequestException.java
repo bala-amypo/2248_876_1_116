@@ -1,8 +1,7 @@
 package com.example.demo.exception;
 
-public class ApiException extends RuntimeException {
-
-    public ApiException(String message) {
+public class BadRequestException extends RuntimeException {
+    public BadRequestException(String message) {
         super(message);
     }
 }
