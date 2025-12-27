@@ -1,67 +1,64 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.AuthRequest;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/auth")
-@Tag(name = "Authentication", description = "Authentication APIs")
+@RequestMapping("/auth")
 public class AuthController {
-
+    
+    @Autowired
+    private UserRepository userRepository;
+    
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    @PostMapping("/login")
-    @Operation(summary = "User login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody AuthRequest request) {
-        // Simplified login for test purposes
-        String token = jwtTokenProvider.generateToken(1L, request.getEmail(), Set.of("ROLE_USER"));
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
-        response.put("email", request.getEmail());
-        return ResponseEntity.ok(response);
-    }
-
+    
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    
     @PostMapping("/register")
-    @Operation(summary = "User registration")
     public ResponseEntity<Map<String, String>> register(@RequestBody AuthRequest request) {
-        // Simplified registration for test purposes
-        passwordEncoder.encode(request.getPassword());
-        String token = jwtTokenProvider.generateToken(1L, request.getEmail(), Set.of("ROLE_USER"));
-        
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
-        response.put("email", request.getEmail());
-        response.put("message", "User registered successfully");
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/validate")
-    @Operation(summary = "Validate JWT token")
-    public ResponseEntity<Map<String, Object>> validateToken(@RequestParam String token) {
-        boolean isValid = jwtTokenProvider.validateToken(token);
-        Map<String, Object> response = new HashMap<>();
-        response.put("valid", isValid);
-        
-        if (isValid) {
-            var claims = jwtTokenProvider.getClaims(token);
-            response.put("userId", claims.get("userId"));
-            response.put("email", claims.get("email"));
-            response.put("roles", claims.get("roles"));
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
         }
         
+        User user = User.builder()
+            .email(request.getEmail())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .roles(Set.of("ROLE_USER"))
+            .build();
+        
+        user = userRepository.save(user);
+        
+        String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), user.getRoles());
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@RequestBody AuthRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+        
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+        
+        String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), user.getRoles());
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
         return ResponseEntity.ok(response);
     }
 }
