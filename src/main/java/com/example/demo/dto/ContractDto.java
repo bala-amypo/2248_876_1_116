@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 @Data
 public class ContractDto {
-    private Long id;
     private String contractNumber;
     private String title;
     private String counterpartyName;

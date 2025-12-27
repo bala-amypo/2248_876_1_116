@@ -2,24 +2,19 @@ package com.example.demo.entity;
 
 import lombok.*;
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
-@Table(name = "breach_rules")
+@Table(name = "vendor_tiers")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BreachRule {
+public class VendorTier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(unique = true)
-    private String ruleName;
-    
-    private BigDecimal penaltyPerDay;
-    private Double maxPenaltyPercentage;
+    private String tierName;
+    private Integer minScoreThreshold;
     private Boolean active;
-    private Boolean isDefaultRule;
 }

@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import lombok.*;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -12,7 +12,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,7 +19,6 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
     
-    @Column(nullable = false)
     private String password;
     
     @ElementCollection(fetch = FetchType.EAGER)
@@ -28,7 +26,11 @@ public class User {
     @Column(name = "role")
     private Set<String> roles;
     
-    @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

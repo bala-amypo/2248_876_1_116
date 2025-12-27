@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import lombok.*;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -12,22 +12,26 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PenaltyCalculation {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contract_id", nullable = false)
+    @JoinColumn(name = "contract_id")
     private Contract contract;
     
-    @Column(nullable = false)
     private Integer daysDelayed;
-    
-    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal calculatedPenalty;
     
-    @Column(nullable = false, updatable = false)
-    @Builder.Default
-    private LocalDateTime calculatedAt = LocalDateTime.now();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "applied_rule_id")
+    private BreachRule appliedRule;
+    
+    @Column(updatable = false)
+    private LocalDateTime calculatedAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        calculatedAt = LocalDateTime.now();
+    }
 }
