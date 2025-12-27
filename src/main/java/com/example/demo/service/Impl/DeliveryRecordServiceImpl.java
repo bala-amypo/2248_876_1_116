@@ -1,6 +1,8 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.DeliveryRecord;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.ContractRepository;
 import com.example.demo.repository.DeliveryRecordRepository;
 import com.example.demo.service.DeliveryRecordService;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,14 @@ import java.util.List;
 public class DeliveryRecordServiceImpl implements DeliveryRecordService {
     
     private DeliveryRecordRepository deliveryRecordRepository;
+    private ContractRepository contractRepository;
+    
+    public DeliveryRecordServiceImpl() {}
+    
+    public DeliveryRecordServiceImpl(DeliveryRecordRepository deliveryRecordRepository, ContractRepository contractRepository) {
+        this.deliveryRecordRepository = deliveryRecordRepository;
+        this.contractRepository = contractRepository;
+    }
     
     @Override
     public DeliveryRecord createDeliveryRecord(DeliveryRecord record) {
@@ -21,19 +31,19 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
     }
     
     @Override
-    public DeliveryRecord getRecordById(Long id) {
-        return deliveryRecordRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Delivery record not found with id: " + id));
+    public List<DeliveryRecord> getDeliveryRecordsForContract(Long contractId) {
+        return deliveryRecordRepository.findByContractIdOrderByDeliveryDateAsc(contractId);
     }
     
     @Override
     public DeliveryRecord getLatestDeliveryRecord(Long contractId) {
         return deliveryRecordRepository.findFirstByContractIdOrderByDeliveryDateDesc(contractId)
-            .orElseThrow(() -> new RuntimeException("No delivery records found for contract: " + contractId));
+            .orElseThrow(() -> new ResourceNotFoundException("No delivery records found"));
     }
     
     @Override
-    public List<DeliveryRecord> getDeliveryRecordsForContract(Long contractId) {
-        return deliveryRecordRepository.findByContractIdOrderByDeliveryDateAsc(contractId);
+    public DeliveryRecord getRecordById(Long id) {
+        return deliveryRecordRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Delivery record not found"));
     }
 }
